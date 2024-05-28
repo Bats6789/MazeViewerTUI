@@ -29,18 +29,30 @@ pub fn ui(f: &mut Frame, app: &mut App) {
         app.clear_maze();
     }
 
-    let title = Paragraph::new(format!(
-        "Hello World! (Press 'Q' to quit). Step {}/{}",
-        app.get_step_val(),
-        if !app.has_generated {
-            0
-        } else {
-            app.maze_steps.len() - 1
-        }
-    ))
-    .style(Style::default().fg(Color::White).bg(Color::Black));
+    let text = match app.current_screen {
+        CurrentScreen::Main => {
+            let mut opts = "\nQuit: Q | Size settings: Z | Generate: G".to_string();
+            if app.has_generated {
+                opts += &format!(
+                    " | Solve: S\nRun: R | Next step: Right | Previous step: Left | Step {}/{}",
+                    app.get_step_val(),
+                    if !app.has_generated {
+                        0
+                    } else {
+                        app.maze_steps.len() - 1
+                    }
+                ).to_string();
+            }
 
-    f.render_widget(title, button_pannel);
+            opts
+        }
+        CurrentScreen::Size => "Exit: Esc | Enter value: Enter | Width: W | Height: H".to_string(),
+    };
+
+    let keybind_hints =
+        Paragraph::new(text).style(Style::default().fg(app.default_color)).centered();
+
+    f.render_widget(keybind_hints, button_pannel);
 
     match app.current_screen {
         CurrentScreen::Main => maze_ui(f, display_pannel, app),
