@@ -22,7 +22,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
 
     app.set_max_size(usize::from((size - 1) / 2));
 
-    if app.get_maze() == "" {
+    if app.maze == "" {
         app.clear_maze();
     }
 
@@ -60,7 +60,7 @@ fn maze_ui(f: &mut Frame, maze_layout: Rect, app: &mut App) {
 
     let mut maze_veiwer = MazeView::new();
 
-    maze_veiwer.load_maze(app.get_maze());
+    maze_veiwer.load_maze(&app.maze);
 
     f.render_widget(maze_veiwer, maze_layout);
 }

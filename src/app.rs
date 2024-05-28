@@ -1,12 +1,16 @@
+use std::fs;
+
 use ratatui::style::Color;
 
 pub enum CurrentScreen {
-    Main, Size
+    Main,
+    Size,
 }
 
 #[derive(PartialEq)]
 pub enum SizeSetting {
-    Width, Height
+    Width,
+    Height,
 }
 
 pub struct App {
@@ -18,10 +22,12 @@ pub struct App {
     pub highlight_bg: Color,
     pub gen_bin: String,
     pub solve_bin: String,
-    maze: String,
+    pub maze: String,
+    pub maze_steps: Vec<String>,
     width: usize,
     height: usize,
     max_size: usize,
+    step: usize,
 }
 
 impl App {
@@ -33,12 +39,14 @@ impl App {
             width: 2,
             height: 2,
             max_size: 2,
+            step: 0,
             default_color: Color::White,
             highlight_fg: Color::Black,
             highlight_bg: Color::Yellow,
             maze: "".to_string(),
             gen_bin: "".to_string(),
-            solve_bin: "".to_string()
+            solve_bin: "".to_string(),
+            maze_steps: Vec::with_capacity(0),
         }
     }
 
@@ -55,6 +63,14 @@ impl App {
         maze.pop();
 
         self.maze = maze;
+    }
+
+    pub fn load_steps(&mut self, arg: &str) {
+        self.maze_steps = fs::read_to_string(arg)
+            .unwrap()
+            .split("\n\n")
+            .map(|s| s.to_string())
+            .collect();
     }
 
     pub fn set_width(&mut self, size: usize) {
@@ -85,8 +101,12 @@ impl App {
         }
     }
 
-    pub fn set_maze(&mut self, maze: String) {
-        self.maze = maze;
+    pub fn set_step_val(&mut self, step: usize) {
+        self.step = if step >= self.maze_steps.len() {
+            self.maze_steps.len() - 1
+        } else {
+            step
+        }
     }
 
     pub fn get_width(&self) -> usize {
@@ -101,8 +121,12 @@ impl App {
         self.max_size
     }
 
-    pub fn get_maze(&self) -> &String {
-        &self.maze
+    pub fn get_step_val(&self) -> usize {
+        self.step
+    }
+
+    pub fn get_step(&self) -> &String {
+        &self.maze_steps[self.step]
     }
 }
 
@@ -116,15 +140,30 @@ mod app_tests {
 
         app.set_max_size(10);
 
-        assert_eq!(app.get_height(), 2, "App.height should start as 2. Got {} instead", app.get_height());
+        assert_eq!(
+            app.get_height(),
+            2,
+            "App.height should start as 2. Got {} instead",
+            app.get_height()
+        );
 
         app.set_height(5);
 
-        assert_eq!(app.get_height(), 5, "App.height should have changed to 5. Got {} instead", app.get_height());
+        assert_eq!(
+            app.get_height(),
+            5,
+            "App.height should have changed to 5. Got {} instead",
+            app.get_height()
+        );
 
         app.set_height(11);
 
-        assert_eq!(app.get_height(), 10, "App.height should not go above 10. Got {} instead", app.get_height());
+        assert_eq!(
+            app.get_height(),
+            10,
+            "App.height should not go above 10. Got {} instead",
+            app.get_height()
+        );
     }
 
     #[test]
@@ -133,15 +172,30 @@ mod app_tests {
 
         app.set_max_size(10);
 
-        assert_eq!(app.get_width(), 2, "App.width should start as 2. Got {} instead", app.get_width());
+        assert_eq!(
+            app.get_width(),
+            2,
+            "App.width should start as 2. Got {} instead",
+            app.get_width()
+        );
 
         app.set_width(5);
 
-        assert_eq!(app.get_width(), 5, "App.width should have changed to 5. Got {} instead", app.get_width());
+        assert_eq!(
+            app.get_width(),
+            5,
+            "App.width should have changed to 5. Got {} instead",
+            app.get_width()
+        );
 
         app.set_width(11);
 
-        assert_eq!(app.get_width(), 10, "App.width should not go above 10. Got {} instead", app.get_width());
+        assert_eq!(
+            app.get_width(),
+            10,
+            "App.width should not go above 10. Got {} instead",
+            app.get_width()
+        );
     }
 
     #[test]

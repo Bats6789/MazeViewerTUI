@@ -123,7 +123,21 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                             ])
                             .output()
                             .expect("Failed to call maze generator.");
-                        app.set_maze(String::from_utf8(output.stdout).unwrap());
+                        app.maze = String::from_utf8(output.stdout).unwrap();
+                        app.load_steps("maze.steps");
+                        app.set_step_val(0);
+                    }
+                    KeyCode::Left => {
+                        if app.get_step_val() > 0 {
+                            app.set_step_val(app.get_step_val() - 1);
+                            app.maze = app.get_step().clone();
+                        }
+                    }
+                    KeyCode::Right => {
+                        if app.get_step_val() < app.maze_steps.len() - 1 {
+                            app.set_step_val(app.get_step_val() + 1);
+                            app.maze = app.get_step().clone();
+                        }
                     }
                     _ => {}
                 },
