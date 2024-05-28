@@ -23,11 +23,11 @@ pub fn size_ui(f: &mut Frame, size_layout: Rect, app: &mut App) {
 
     match app.size_setting {
         crate::app::SizeSetting::Width => {
-            width = app.size;
+            width = app.tmp;
             width_style = highlight_style;
         }
         crate::app::SizeSetting::Height => {
-            height = app.size;
+            height = app.tmp;
             height_style = highlight_style;
         }
     }

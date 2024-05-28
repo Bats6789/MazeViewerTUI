@@ -20,7 +20,7 @@ pub enum SizeSetting {
 pub struct App {
     pub current_screen: CurrentScreen,
     pub size_setting: SizeSetting,
-    pub size: usize,
+    pub tmp: usize,
     pub default_color: Color,
     pub highlight_fg: Color,
     pub highlight_bg: Color,
@@ -42,7 +42,7 @@ impl App {
         App {
             current_screen: CurrentScreen::Main,
             size_setting: SizeSetting::Width,
-            size: 2,
+            tmp: 2,
             default_color: Color::White,
             highlight_fg: Color::Black,
             highlight_bg: Color::Yellow,

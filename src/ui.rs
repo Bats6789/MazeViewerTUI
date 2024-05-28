@@ -1,5 +1,6 @@
 pub mod maze_ui;
 mod size_ui;
+mod speed_ui;
 
 use ratatui::{
     layout::{Constraint, Layout},
@@ -10,7 +11,7 @@ use ratatui::{
 
 use crate::app::{App, CurrentScreen};
 
-use self::{maze_ui::maze_ui, size_ui::size_ui};
+use self::{maze_ui::maze_ui, size_ui::size_ui, speed_ui::speed_ui};
 
 pub fn ui(f: &mut Frame, app: &mut App) {
     let main_layout = Layout::vertical([Constraint::Length(3), Constraint::Min(5)]).split(f.size());
@@ -32,7 +33,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
 
     let text = match app.current_screen {
         CurrentScreen::Main => {
-            let mut opts = "\nQuit: Q | Size settings: Z | Generate: G".to_string();
+            let mut opts = "\nQuit: Q | Size settings: Z | Speed setting: P | Generate: G".to_string();
             if app.has_generated {
                 opts += &format!(
                     " | Solve: S\nRun: R | Next step: Right | Previous step: Left | Step {}/{}",
@@ -51,7 +52,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
         CurrentScreen::Size => {
             "\nExit: Esc | Enter value: Enter | Width: W | Height: H".to_string()
         }
-        CurrentScreen::Speed => todo!(),
+        CurrentScreen::Speed => "\nExit: Esc | Enter value: Enter".to_string(),
         CurrentScreen::Algorithm => todo!(),
     };
 
@@ -64,7 +65,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
     match app.current_screen {
         CurrentScreen::Main => maze_ui(f, display_pannel, app),
         CurrentScreen::Size => size_ui(f, display_pannel, app),
-        CurrentScreen::Speed => todo!(),
+        CurrentScreen::Speed => speed_ui(f, display_pannel, app),
         CurrentScreen::Algorithm => todo!(),
     };
 }
