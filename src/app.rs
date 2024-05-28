@@ -16,6 +16,9 @@ pub struct App {
     pub default_color: Color,
     pub highlight_fg: Color,
     pub highlight_bg: Color,
+    pub gen_bin: String,
+    pub solve_bin: String,
+    maze: String,
     width: usize,
     height: usize,
     max_size: usize,
@@ -32,8 +35,26 @@ impl App {
             max_size: 2,
             default_color: Color::White,
             highlight_fg: Color::Black,
-            highlight_bg: Color::Yellow
+            highlight_bg: Color::Yellow,
+            maze: "".to_string(),
+            gen_bin: "".to_string(),
+            solve_bin: "".to_string()
         }
+    }
+
+    pub fn clear_maze(&mut self) {
+        let wall_row = String::from("#".repeat(2 * self.width + 1) + "\n");
+        let cell_row = String::from("# ".repeat(self.width) + "#\n");
+        let mut maze = String::with_capacity((2 * self.width + 2) * (2 * self.height + 1) + 1);
+
+        for _ in 0..self.height {
+            maze.push_str(&wall_row);
+            maze.push_str(&cell_row);
+        }
+        maze.push_str(&wall_row);
+        maze.pop();
+
+        self.maze = maze;
     }
 
     pub fn set_width(&mut self, size: usize) {
@@ -75,6 +96,10 @@ impl App {
     pub fn get_max_size(&self) -> usize {
         self.max_size
     }
+
+    pub fn get_maze(&self) -> &String {
+        &self.maze
+    }
 }
 
 #[cfg(test)]
@@ -113,5 +138,27 @@ mod app_tests {
         app.set_width(11);
 
         assert_eq!(app.get_width(), 10, "App.width should not go above 10. Got {} instead", app.get_width());
+    }
+
+    #[test]
+    fn clear_maze_test() {
+        let mut app = App::new();
+
+        app.set_max_size(3);
+        app.set_width(3);
+        app.set_height(3);
+
+        app.clear_maze();
+
+        let expected = "\
+#######
+# # # #
+#######
+# # # #
+#######
+# # # #
+#######";
+
+        assert_eq!(expected, app.maze);
     }
 }

@@ -28,6 +28,43 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut terminal = Terminal::new(backend)?;
 
     let mut app = App::new();
+
+    match std::env::var("MAZE_GEN") {
+        Ok(str) => app.gen_bin = str,
+        Err(err) => {
+            disable_raw_mode()?;
+
+            execute!(
+                terminal.backend_mut(),
+                LeaveAlternateScreen,
+                DisableMouseCapture
+            )?;
+            terminal.show_cursor()?;
+
+            eprintln!("\"MAZE_GEN\" must be defined to the path of the maze generator.");
+
+            return Err(Box::new(err));
+        }
+    };
+
+    match std::env::var("MAZE_SOLVE") {
+        Ok(str) => app.gen_bin = str,
+        Err(err) => {
+            disable_raw_mode()?;
+
+            execute!(
+                terminal.backend_mut(),
+                LeaveAlternateScreen,
+                DisableMouseCapture
+            )?;
+            terminal.show_cursor()?;
+
+            eprintln!("\"MAZE_SOLVE\" must be defined to the path of the maze generator.");
+
+            return Err(Box::new(err));
+        }
+    };
+
     let res = run_app(&mut terminal, &mut app);
 
     disable_raw_mode()?;
@@ -48,6 +85,13 @@ fn main() -> Result<(), Box<dyn Error>> {
 }
 
 fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+    terminal.draw(|f| ui(f, app))?;
+
+    app.set_width(app.get_max_size() / 2);
+    app.set_height(app.get_max_size() / 2);
+
+    app.clear_maze();
+
     loop {
         terminal.draw(|f| ui(f, app))?;
 

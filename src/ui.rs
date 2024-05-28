@@ -1,5 +1,5 @@
 use ratatui::{
-    layout::{Constraint, Layout, Rect}, style::{Color, Style}, text::Line, widgets::{Block, Paragraph, Widget}, Frame
+    layout::{Constraint, Layout, Rect}, style::{Color, Style}, widgets::{Block, Paragraph}, Frame
 };
 
 use crate::app::{App, CurrentScreen};
@@ -14,7 +14,7 @@ pub fn ui(f: &mut Frame, app: &mut App) {
     let button_pannel = main_layout[0];
     let display_pannel = main_layout[1];
 
-    let size = if display_pannel.height> display_pannel.width {
+    let size = if display_pannel.height > display_pannel.width {
         display_pannel.width
     } else {
         display_pannel.height
@@ -22,18 +22,22 @@ pub fn ui(f: &mut Frame, app: &mut App) {
 
     app.set_max_size(usize::from((size - 1) / 2));
 
+    if app.get_maze() == "" {
+        app.clear_maze();
+    }
+
     let title = Paragraph::new("Hello World! (Press 'Q' to quit)")
         .style(Style::default().fg(Color::White).bg(Color::Black));
 
     f.render_widget(title, button_pannel);
 
     match app.current_screen {
-        CurrentScreen::Main => maze_ui(f, display_pannel),
+        CurrentScreen::Main => maze_ui(f, display_pannel, app),
         CurrentScreen::Size => size_ui(f, display_pannel, app)
     };
 }
 
-fn maze_ui(f: &mut Frame, maze_layout: Rect) {
+fn maze_ui(f: &mut Frame, maze_layout: Rect, app: &mut App) {
     let size = if maze_layout.height> maze_layout.width {
         maze_layout.width
     } else {
@@ -56,14 +60,7 @@ fn maze_ui(f: &mut Frame, maze_layout: Rect) {
 
     let mut maze_veiwer = MazeView::new();
 
-    maze_veiwer.load_maze("\
-#######
-#    X#
-# #####
-#   # #
-### # #
-#S    #
-#######");
+    maze_veiwer.load_maze(app.get_maze());
 
     f.render_widget(maze_veiwer, maze_layout);
 }
