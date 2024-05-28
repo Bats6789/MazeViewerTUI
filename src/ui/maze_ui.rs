@@ -1,5 +1,8 @@
-use ratatui::{style::Color, widgets::Widget};
+use ratatui::{layout::{Constraint, Layout, Rect}, style::Color, widgets::Widget, Frame};
 
+use crate::app::App;
+
+#[derive(Clone)]
 pub struct MazeView {
     cells: Option<Vec<Cell>>,
     height: usize,
@@ -24,6 +27,32 @@ struct Cell {
     start: bool,
     stop: bool,
     character: char,
+}
+
+pub fn maze_ui(f: &mut Frame, maze_layout: Rect, app: &mut App) {
+    let size = if maze_layout.height > maze_layout.width {
+        maze_layout.width
+    } else {
+        maze_layout.height
+    };
+
+    let layout = Layout::horizontal([
+        Constraint::Min(0),
+        Constraint::Max(size),
+        Constraint::Min(0),
+    ])
+    .split(maze_layout);
+
+    let maze_layout = layout[1];
+
+    let layout =
+        Layout::vertical([Constraint::Length(size), Constraint::Min(0)]).split(maze_layout);
+
+    let maze_layout = layout[0];
+
+    app.maze_veiwer.load_maze(&app.maze);
+
+    f.render_widget(app.maze_veiwer.clone(), maze_layout);
 }
 
 impl Widget for MazeView {

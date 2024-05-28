@@ -2,9 +2,13 @@ use std::fs;
 
 use ratatui::style::Color;
 
+use crate::ui::maze_ui::MazeView;
+
 pub enum CurrentScreen {
     Main,
     Size,
+    Speed,
+    Algorithm
 }
 
 #[derive(PartialEq)]
@@ -25,6 +29,7 @@ pub struct App {
     pub maze: String,
     pub maze_steps: Vec<String>,
     pub has_generated: bool,
+    pub maze_veiwer: MazeView,
     width: usize,
     height: usize,
     max_size: usize,
@@ -47,6 +52,7 @@ impl App {
             maze_steps: Vec::with_capacity(0),
             speed: 50,
             has_generated: false,
+            maze_veiwer: MazeView::new(),
             width: 2,
             height: 2,
             max_size: 2,

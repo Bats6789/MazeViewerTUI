@@ -175,72 +175,76 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                     }
                     _ => {}
                 },
-                CurrentScreen::Size => match key.code {
-                    KeyCode::Esc => {
-                        match app.size_setting {
-                            SizeSetting::Width => app.set_width(app.size),
-                            SizeSetting::Height => app.set_height(app.size),
-                        }
-                        app.clear_maze();
-                        app.current_screen = CurrentScreen::Main;
-                    }
-                    KeyCode::Char('w') | KeyCode::Char('W') => {
-                        if app.size_setting == SizeSetting::Height {
-                            app.set_height(app.size);
-                        }
-                        app.size_setting = SizeSetting::Width;
-                        app.size = app.get_width();
-                    }
-                    KeyCode::Char('h') | KeyCode::Char('H') => {
-                        if app.size_setting == SizeSetting::Width {
-                            app.set_width(app.size);
-                        }
-                        app.size_setting = SizeSetting::Height;
-                        app.size = app.get_height();
-                    }
-                    KeyCode::Backspace => {
-                        if app.size < 10 {
-                            app.size = 0;
-                        } else {
-                            app.size /= 10;
-                        }
-                    }
-                    KeyCode::Char('0') => {
-                        app.size = enter_value(0, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('1') => {
-                        app.size = enter_value(1, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('2') => {
-                        app.size = enter_value(2, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('3') => {
-                        app.size = enter_value(3, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('4') => {
-                        app.size = enter_value(4, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('5') => {
-                        app.size = enter_value(5, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('6') => {
-                        app.size = enter_value(6, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('7') => {
-                        app.size = enter_value(7, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('8') => {
-                        app.size = enter_value(8, app.size, app.get_max_size());
-                    }
-                    KeyCode::Char('9') => {
-                        app.size = enter_value(9, app.size, app.get_max_size());
-                    }
-                    KeyCode::Enter => match app.size_setting {
-                        SizeSetting::Width => app.set_width(app.size),
-                        SizeSetting::Height => app.set_height(app.size),
-                    },
-                    _ => {}
+                CurrentScreen::Size => {
+                    match key.code {
+                                    KeyCode::Esc => {
+                                        match app.size_setting {
+                                            SizeSetting::Width => app.set_width(app.size),
+                                            SizeSetting::Height => app.set_height(app.size),
+                                        }
+                                        app.clear_maze();
+                                        app.current_screen = CurrentScreen::Main;
+                                    }
+                                    KeyCode::Char('w') | KeyCode::Char('W') => {
+                                        if app.size_setting == SizeSetting::Height {
+                                            app.set_height(app.size);
+                                        }
+                                        app.size_setting = SizeSetting::Width;
+                                        app.size = app.get_width();
+                                    }
+                                    KeyCode::Char('h') | KeyCode::Char('H') => {
+                                        if app.size_setting == SizeSetting::Width {
+                                            app.set_width(app.size);
+                                        }
+                                        app.size_setting = SizeSetting::Height;
+                                        app.size = app.get_height();
+                                    }
+                                    KeyCode::Backspace => {
+                                        if app.size < 10 {
+                                            app.size = 0;
+                                        } else {
+                                            app.size /= 10;
+                                        }
+                                    }
+                                    KeyCode::Char('0') => {
+                                        app.size = enter_value(0, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('1') => {
+                                        app.size = enter_value(1, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('2') => {
+                                        app.size = enter_value(2, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('3') => {
+                                        app.size = enter_value(3, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('4') => {
+                                        app.size = enter_value(4, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('5') => {
+                                        app.size = enter_value(5, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('6') => {
+                                        app.size = enter_value(6, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('7') => {
+                                        app.size = enter_value(7, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('8') => {
+                                        app.size = enter_value(8, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Char('9') => {
+                                        app.size = enter_value(9, app.size, app.get_max_size());
+                                    }
+                                    KeyCode::Enter => match app.size_setting {
+                                        SizeSetting::Width => app.set_width(app.size),
+                                        SizeSetting::Height => app.set_height(app.size),
+                                    },
+                                    _ => {}
+                                }
                 },
+                CurrentScreen::Speed => todo!(),
+                CurrentScreen::Algorithm => todo!(),
             }
         }
     }
