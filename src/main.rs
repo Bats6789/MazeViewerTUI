@@ -75,16 +75,22 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.current_screen = CurrentScreen::Main;
                     }
                     KeyCode::Char('w') | KeyCode::Char('W') => {
+                        if app.size_setting == SizeSetting::Height {
+                            app.set_height(app.size);
+                        }
                         app.size_setting = SizeSetting::Width;
                         app.size = app.get_width();
                     }
                     KeyCode::Char('h') | KeyCode::Char('H') => {
+                        if app.size_setting == SizeSetting::Width {
+                            app.set_width(app.size);
+                        }
                         app.size_setting = SizeSetting::Height;
                         app.size = app.get_height();
                     }
                     KeyCode::Backspace => {
                         if app.size < 10 {
-                            app.size = 2
+                            app.size = 0;
                         } else {
                             app.size /= 10;
                         }
