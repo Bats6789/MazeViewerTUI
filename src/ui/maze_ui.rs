@@ -158,11 +158,11 @@ impl Widget for MazeView {
             } else if cell.observed {
                 buf.get_mut(start_x + x, start_y + y)
                     .set_char(' ')
-                    .set_fg(self.observed_color);
+                    .set_bg(self.observed_color);
             } else if cell.queued {
                 buf.get_mut(start_x + x, start_y + y)
                     .set_char(' ')
-                    .set_fg(self.queued_color);
+                    .set_bg(self.queued_color);
             }
 
             // corners wall
