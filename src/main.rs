@@ -1,6 +1,6 @@
 use crate::ui::ui;
 
-use std::{error::Error, fs, io, process::Command};
+use std::{error::Error, fs, io, process::Command, time::Duration};
 
 use app::{App, CurrentScreen, SizeSetting};
 use crossterm::{
@@ -149,14 +149,26 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                         app.load_steps("maze.steps");
                         app.set_step_val(0);
                     }
+                    KeyCode::Char('r') | KeyCode::Char('R') => {
+                        if app.get_step_val() == app.maze_steps.len() - 1 {
+                            app.set_step_val(0);
+                        }
+                        let start = app.get_step_val();
+                        for i in start..app.maze_steps.len() {
+                            app.set_step_val(i);
+                            app.maze = app.get_step().clone();
+                            std::thread::sleep(Duration::from_millis(app.get_period()));
+                            terminal.draw(|f| ui(f, app))?;
+                        }
+                    }
                     KeyCode::Left => {
-                        if app.get_step_val() > 0 {
+                        if app.has_generated && app.get_step_val() > 0 {
                             app.set_step_val(app.get_step_val() - 1);
                             app.maze = app.get_step().clone();
                         }
                     }
                     KeyCode::Right => {
-                        if app.get_step_val() < app.maze_steps.len() - 1 {
+                        if app.has_generated && app.get_step_val() < app.maze_steps.len() - 1 {
                             app.set_step_val(app.get_step_val() + 1);
                             app.maze = app.get_step().clone();
                         }

@@ -29,6 +29,7 @@ pub struct App {
     height: usize,
     max_size: usize,
     step: usize,
+    speed: usize,
 }
 
 impl App {
@@ -37,18 +38,19 @@ impl App {
             current_screen: CurrentScreen::Main,
             size_setting: SizeSetting::Width,
             size: 2,
+            default_color: Color::White,
+            highlight_fg: Color::Black,
+            highlight_bg: Color::Yellow,
+            gen_bin: "".to_string(),
+            solve_bin: "".to_string(),
+            maze: "".to_string(),
+            maze_steps: Vec::with_capacity(0),
+            speed: 50,
+            has_generated: false,
             width: 2,
             height: 2,
             max_size: 2,
             step: 0,
-            default_color: Color::White,
-            highlight_fg: Color::Black,
-            highlight_bg: Color::Yellow,
-            maze: "".to_string(),
-            gen_bin: "".to_string(),
-            solve_bin: "".to_string(),
-            maze_steps: Vec::with_capacity(0),
-            has_generated: false
         }
     }
 
@@ -65,34 +67,38 @@ impl App {
         maze.pop();
 
         self.maze = maze;
+        self.has_generated = false;
     }
 
     pub fn load_steps(&mut self, arg: &str) {
-        self.maze_steps = fs::read_to_string(arg)
-            .unwrap()
-            .split("\n\n")
+        let str = fs::read_to_string(arg).expect("Failed to read: {arg}");
+
+        // replace CRLF with just LF if they exist (only on Windows)
+        let str = str.replace("\r\n\r\n", "\n\n");
+
+        self.maze_steps = str.split("\n\n")
             .map(|s| s.to_string())
             .collect();
     }
 
     pub fn set_width(&mut self, size: usize) {
-        if size < 2 {
-            self.width = 2;
+        self.width = if size < 2 {
+            2
         } else if size > self.max_size {
-            self.width = self.max_size;
+            self.max_size
         } else {
-            self.width = size;
-        }
+            size
+        };
     }
 
     pub fn set_height(&mut self, size: usize) {
-        if size < 2 {
-            self.height = 2;
+        self.height = if size < 2 {
+            2
         } else if size > self.max_size {
-            self.height = self.max_size;
+            self.max_size
         } else {
-            self.height = size;
-        }
+            size
+        };
     }
 
     pub fn set_max_size(&mut self, size: usize) {
@@ -108,7 +114,17 @@ impl App {
             self.maze_steps.len() - 1
         } else {
             step
-        }
+        };
+    }
+
+    pub fn set_speed(&mut self, speed: usize) {
+        self.speed = if speed < 1 {
+            1
+        } else if speed > 100 {
+            100
+        } else {
+            speed
+        };
     }
 
     pub fn get_width(&self) -> usize {
@@ -129,6 +145,14 @@ impl App {
 
     pub fn get_step(&self) -> &String {
         &self.maze_steps[self.step]
+    }
+
+    pub fn get_speed(&self) -> usize {
+        self.speed
+    }
+
+    pub fn get_period(&self) -> u64 {
+        u64::try_from(1000 / self.speed).unwrap()
     }
 }
 
@@ -220,5 +244,61 @@ mod app_tests {
 #######";
 
         assert_eq!(expected, app.maze);
+    }
+
+    #[test]
+    fn load_steps_test() {
+        let mut app = App::new();
+
+        
+        let test_str = "\
+#####
+# # #
+#####
+# # #
+#####
+
+#####
+# # #
+#####
+# # #
+#####
+
+#####
+# # #
+#####
+# # #
+#####";
+
+        let expected = vec![
+            "\
+#####
+# # #
+#####
+# # #
+#####",
+"\
+#####
+# # #
+#####
+# # #
+#####",
+"\
+#####
+# # #
+#####
+# # #
+#####",
+
+        ];
+
+        let _ = fs::write("tmp.steps", test_str);
+
+        app.load_steps("tmp.steps");
+
+        let _ = fs::remove_file("tmp.steps");
+
+        assert_eq!(expected, app.maze_steps, "Maze steps did not parse the maze correctly");
+        assert_eq!(3, app.maze_steps.len(), "Maze steps was not 3. Got {}", app.maze_steps.len());
     }
 }
