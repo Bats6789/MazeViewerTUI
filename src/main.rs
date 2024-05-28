@@ -1,6 +1,6 @@
 use crate::ui::ui;
 
-use std::{error::Error, io};
+use std::{error::Error, io, process::Command};
 
 use app::{App, CurrentScreen, SizeSetting};
 use crossterm::{
@@ -48,7 +48,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     };
 
     match std::env::var("MAZE_SOLVE") {
-        Ok(str) => app.gen_bin = str,
+        Ok(str) => app.solve_bin = str,
         Err(err) => {
             disable_raw_mode()?;
 
@@ -112,10 +112,28 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                             SizeSetting::Height => app.get_height(),
                         };
                     }
+                    KeyCode::Char('g') | KeyCode::Char('G') => {
+                        let output = Command::new(&app.gen_bin)
+                            .args([
+                                "-q",
+                                "-v",
+                                "maze.steps",
+                                &app.get_width().to_string(),
+                                &app.get_height().to_string(),
+                            ])
+                            .output()
+                            .expect("Failed to call maze generator.");
+                        app.set_maze(String::from_utf8(output.stdout).unwrap());
+                    }
                     _ => {}
                 },
                 CurrentScreen::Size => match key.code {
                     KeyCode::Esc => {
+                        match app.size_setting {
+                            SizeSetting::Width => app.set_width(app.size),
+                            SizeSetting::Height => app.set_height(app.size),
+                        }
+                        app.clear_maze();
                         app.current_screen = CurrentScreen::Main;
                     }
                     KeyCode::Char('w') | KeyCode::Char('W') => {

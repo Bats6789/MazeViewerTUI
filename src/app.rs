@@ -85,6 +85,10 @@ impl App {
         }
     }
 
+    pub fn set_maze(&mut self, maze: String) {
+        self.maze = maze;
+    }
+
     pub fn get_width(&self) -> usize {
         self.width
     }
