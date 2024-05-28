@@ -60,7 +60,7 @@ impl Widget for MazeView {
             // upper wall
             if cell.up || path_up || route_up {
                 buf.get_mut(start_x + x, start_y + y - 1)
-                    .set_char(if cell.up { '━' } else { '─' })
+                    .set_char(if cell.up { '━' } else { '│' })
                     .set_fg(if route_up {
                         self.route_color
                     } else if path_up {
@@ -71,9 +71,9 @@ impl Widget for MazeView {
             }
 
             // lower wall
-            if cell.down || path_up || route_up {
+            if cell.down || path_down || route_down {
                 buf.get_mut(start_x + x, start_y + y + 1)
-                    .set_char(if cell.down { '━' } else { '─' })
+                    .set_char(if cell.down { '━' } else { '│' })
                     .set_fg(if route_down {
                         self.route_color
                     } else if path_down {
@@ -84,9 +84,9 @@ impl Widget for MazeView {
             }
 
             // left wall
-            if cell.left || path_up || route_up {
+            if cell.left || path_left || route_left {
                 buf.get_mut(start_x + x - 1, start_y + y)
-                    .set_char(if cell.left { '┃' } else { '│' })
+                    .set_char(if cell.left { '┃' } else { '─' })
                     .set_fg(if route_left {
                         self.route_color
                     } else if path_left {
@@ -97,9 +97,9 @@ impl Widget for MazeView {
             }
 
             // right wall
-            if cell.right || path_up || route_up {
+            if cell.right || path_right || route_right {
                 buf.get_mut(start_x + x + 1, start_y + y)
-                    .set_char(if cell.right { '┃' } else { '│' })
+                    .set_char(if cell.right { '┃' } else { '─' })
                     .set_fg(if route_right {
                         self.route_color
                     } else if path_right {
@@ -109,9 +109,22 @@ impl Widget for MazeView {
                     });
             }
 
-            if cell.path || cell.route {
+            if cell.start || cell.stop {
                 buf.get_mut(start_x + x, start_y + y)
-                    .set_char(get_path_symbol(cell.up, cell.down, cell.left, cell.right))
+                    .set_char(cell.character)
+                    .set_fg(self.default_color);
+            } else if cell.route {
+                buf.get_mut(start_x + x, start_y + y)
+                    .set_char(get_path_symbol(
+                        path_up,
+                        path_down,
+                        path_left,
+                        path_right,
+                    ))
+                    .set_fg(self.route_color);
+            } else if cell.path {
+                buf.get_mut(start_x + x, start_y + y)
+                    .set_char(get_path_symbol(path_up, path_down, path_left, path_right))
                     .set_fg(self.path_color);
             } else if cell.observed {
                 buf.get_mut(start_x + x, start_y + y)
@@ -121,12 +134,7 @@ impl Widget for MazeView {
                 buf.get_mut(start_x + x, start_y + y)
                     .set_char(' ')
                     .set_fg(self.queued_color);
-            } else if cell.start || cell.stop {
-                buf.get_mut(start_x + x, start_y + y)
-                    .set_char(cell.character)
-                    .set_fg(self.default_color);
             }
-
 
             // corners wall
             let (ulc, urc, llc, lrc) =

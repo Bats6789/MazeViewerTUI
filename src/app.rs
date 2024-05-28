@@ -24,6 +24,7 @@ pub struct App {
     pub solve_bin: String,
     pub maze: String,
     pub maze_steps: Vec<String>,
+    pub has_generated: bool,
     width: usize,
     height: usize,
     max_size: usize,
@@ -47,6 +48,7 @@ impl App {
             gen_bin: "".to_string(),
             solve_bin: "".to_string(),
             maze_steps: Vec::with_capacity(0),
+            has_generated: false
         }
     }
 

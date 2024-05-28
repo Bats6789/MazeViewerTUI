@@ -1,6 +1,6 @@
 use crate::ui::ui;
 
-use std::{error::Error, io, process::Command};
+use std::{error::Error, fs, io, process::Command};
 
 use app::{App, CurrentScreen, SizeSetting};
 use crossterm::{
@@ -123,6 +123,28 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>, app: &mut App) -> io::Result<
                             ])
                             .output()
                             .expect("Failed to call maze generator.");
+                        app.maze = String::from_utf8(output.stdout).unwrap();
+                        app.load_steps("maze.steps");
+                        app.set_step_val(0);
+                        app.has_generated = true;
+                        let _ = fs::write("maze.mz", &app.maze);
+                    }
+                    KeyCode::Char('s') | KeyCode::Char('S') => {
+                        if !app.has_generated {
+                            continue;
+                        }
+                        let output = Command::new(&app.solve_bin)
+                            .args([
+                                "-q",
+                                "-v",
+                                "maze.steps",
+                                "-i",
+                                "maze.mz",
+                                &app.get_width().to_string(),
+                                &app.get_height().to_string(),
+                            ])
+                            .output()
+                            .expect("Failed to call maze solver.");
                         app.maze = String::from_utf8(output.stdout).unwrap();
                         app.load_steps("maze.steps");
                         app.set_step_val(0);
